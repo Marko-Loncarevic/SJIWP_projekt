@@ -1,0 +1,91 @@
+
+body.bg-light {
+    background-color: #f8f9fa !important;
+    padding-bottom: 60px;
+}
+
+.container.py-4 {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+    max-width: 100%;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.action-btns .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    width: 100%;
+}
+
+.badge-available {
+    background-color: #28a745;
+}
+
+.badge-unavailable {
+    background-color: #dc3545;
+}
+
+.card.shadow-sm {
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+    margin-bottom: 1.5rem;
+}
+
+.card-body.p-0 {
+    padding: 0 !important;
+}
+
+.table {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.table thead.table-light th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0,0,0,.075);
+}
+
+.badge {
+    font-size: 0.875em;
+    font-weight: 600;
+    padding: 0.35em 0.65em;
+}
+
+
+.container {
+    max-width: 100%;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table {
+    width: 100%;
+    max-width: 100%;
+}
+
+
+.modal-content {
+    border-radius: 0.3rem;
+}
+
+.form-control {
+    border-radius: 0.25rem;
+}
+
+.btn {
+    border-radius: 0.25rem;
+}

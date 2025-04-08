@@ -1,0 +1,103 @@
+
+body {
+    background-color: #f8f9fa;
+    padding-bottom: 60px; 
+}
+
+.container {
+    max-width: 100%;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.status-aktivna { 
+    background-color: #d4edda; 
+    color: #155724; 
+}
+
+.status-zavrsena { 
+    background-color: #cce5ff; 
+    color: #004085; 
+}
+
+.status-otkazana { 
+    background-color: #f8d7da; 
+    color: #721c24; 
+}
+
+.hover-shadow:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    transition: box-shadow 0.3s ease;
+}
+
+.filter-section {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    border: 1px solid #dee2e6;
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 1rem;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0,0,0,.025);
+}
+
+.table-light th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.alert {
+    border-radius: 0.25rem;
+}
+
+.btn {
+    border-radius: 0.25rem;
+}
+
+.form-control, .form-select {
+    border-radius: 0.25rem;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem ;
+}
+
+.mt-4 {
+    margin-top: 1.5rem ;
+}
+
+.d-block {
+    display: block ;
+}
+
+.text-muted {
+    color: #6c757d ;
+}
+
+.align-middle {
+    vertical-align: middle ;
+}

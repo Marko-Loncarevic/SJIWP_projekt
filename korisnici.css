@@ -1,0 +1,97 @@
+
+body.bg-light {
+    background-color: #f8f9fa;
+    padding-bottom: 60px; 
+}
+
+.container {
+    max-width: 100%;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.action-btns .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    width: 100%;
+}
+
+.card.shadow-sm {
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+    margin-bottom: 1.5rem;
+}
+
+.card-body.p-0 {
+    padding: 0 t;
+}
+
+.table {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.table thead.table-light th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0,0,0,.075);
+}
+
+.btn {
+    border-radius: 0.25rem;
+}
+
+.alert {
+    border-radius: 0.25rem;
+}
+
+.modal-content {
+    border-radius: 0.3rem;
+}
+
+.form-control {
+    border-radius: 0.25rem;
+}
+
+.text-danger {
+    color: #dc3545 ;
+}
+
+.d-flex {
+    display: flex ;
+}
+
+.justify-content-between {
+    justify-content: space-between ;
+}
+
+.align-items-center {
+    align-items: center ;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem;
+}
+
+.mb-0 {
+    margin-bottom: 0 ;
+}
+
+.py-4 {
+    padding-top: 1.5rem ;
+    padding-bottom: 1.5rem ;
+}
+
+.me-2 {
+    margin-right: 0.5rem ;
+}
+
+.h3 {
+    font-size: 1.75rem;
+}
