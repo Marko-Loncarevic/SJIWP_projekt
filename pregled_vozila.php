@@ -71,7 +71,6 @@
             <?php
             include("db__connection.php");
             
-     
             $mostRentedQuery = "SELECT v.IDVozilo, v.Naziv, v.Model, 
                               COUNT(r.IDRezervacija) AS BrojRezervacija,
                               SUM(DATEDIFF(r.DatumZavrsetka, r.DatumPocetka)) AS UkupnoDana
@@ -83,7 +82,6 @@
             $mostRentedResult = mysqli_query($db, $mostRentedQuery);
             $mostRented = mysqli_fetch_assoc($mostRentedResult);
             
-       
             $highestEarningQuery = "SELECT v.IDVozilo, v.Naziv, v.Model, 
                                    SUM(r.UkupnaCijena) AS UkupnaZarada
                                    FROM vozila v
@@ -94,7 +92,6 @@
             $highestEarningResult = mysqli_query($db, $highestEarningQuery);
             $highestEarning = mysqli_fetch_assoc($highestEarningResult);
             
-   
             $statsQuery = "SELECT 
                           SUM(DATEDIFF(r.DatumZavrsetka, r.DatumPocetka)) AS UkupnoDana,
                           SUM(r.UkupnaCijena) AS UkupnaZarada
@@ -102,14 +99,11 @@
             $statsResult = mysqli_query($db, $statsQuery);
             $stats = mysqli_fetch_assoc($statsResult);
             
-  
             $currentDate = date('Y-m-d');
             $rentedQuery = "SELECT COUNT(DISTINCT VoziloID) AS TrenutnoIznajmljeno
                            FROM rezervacije
-                           WHERE StatusRezervacije = 'aktivna'
-                           ";
+                           WHERE StatusRezervacije = 'aktivna'";
             $stmt = mysqli_prepare($db, $rentedQuery);
-           
             mysqli_stmt_execute($stmt);
             $rentedResult = mysqli_stmt_get_result($stmt);
             $rentedCount = mysqli_fetch_assoc($rentedResult);
@@ -167,6 +161,7 @@
             </div>
         </div>
 
+        <!-- Add Vehicle Modal -->
         <div class="modal fade" id="addVehicleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="addVehicleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -218,7 +213,65 @@
             </div>
         </div>
 
-    
+        <!-- Edit Vehicle Modal -->
+        <div class="modal fade" id="editVehicleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editVehicleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editVehicleModalLabel">Uredi vozilo</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editVehicleForm" method="POST">
+                            <input type="hidden" name="id" id="editVehicleId">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Naziv vozila <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="naziv" id="editNaziv" maxlength="25" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Model vozila</label>
+                                    <input type="text" class="form-control" name="model" id="editModel" maxlength="25">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Cijena korištenja dnevno <span class="text-danger">*</span></label>
+                                    <input type="number" step="0.01" class="form-control" name="cijena" id="editCijena" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Godina proizvodnje</label>
+                                    <input type="text" class="form-control" name="godiste" id="editGodiste">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Prijeđenih kilometara</label>
+                                    <input type="number" class="form-control" name="kilometraza" id="editKilometraza">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Registracija</label>
+                                    <input type="text" class="form-control" name="registracija" id="editRegistracija">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Raspoloživost <span class="text-danger">*</span></label>
+                                <select class="form-control" name="raspolozivost" id="editRaspolozivost" required>
+                                    <option value="Dostupno">Dostupno</option>
+                                    <option value="Nije dostupno">Nije dostupno</option>
+                                    <option value="Rezervirano">Rezervirano</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zatvori</button>
+                        <button type="submit" form="editVehicleForm" class="btn btn-primary">Spremi promjene</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="card shadow-sm">
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -238,28 +291,24 @@
                         </thead>
                         <tbody>
                             <?php
-                           
-$resetStatusQuery = "UPDATE vozila SET Raspolozivost = 'Dostupno'";
-mysqli_query($db, $resetStatusQuery);
+                            // Update vehicle availability statuses
+                            $resetStatusQuery = "UPDATE vozila SET Raspolozivost = 'Dostupno'";
+                            mysqli_query($db, $resetStatusQuery);
 
+                            $unavailableQuery = "UPDATE vozila v
+                                             JOIN rezervacije r ON v.IDVozilo = r.VoziloID 
+                                             SET v.Raspolozivost = 'Nije dostupno'
+                                             WHERE r.StatusRezervacije = 'aktivna'
+                                               AND CURDATE() BETWEEN r.DatumPocetka AND r.DatumZavrsetka";
+                            mysqli_query($db, $unavailableQuery);
 
-$unavailableQuery = "UPDATE vozila v
-                     JOIN rezervacije r ON v.IDVozilo = r.VoziloID 
-                     SET v.Raspolozivost = 'Nije dostupno'
-                     WHERE r.StatusRezervacije = 'aktivna'
-                       AND CURDATE() BETWEEN r.DatumPocetka AND r.DatumZavrsetka";
-mysqli_query($db, $unavailableQuery);
+                            $reservedQuery = "UPDATE vozila v
+                                          JOIN rezervacije r ON v.IDVozilo = r.VoziloID
+                                          SET v.Raspolozivost = 'Rezervirano'
+                                          WHERE r.StatusRezervacije = 'aktivna'
+                                            AND CURDATE() < r.DatumPocetka";
+                            mysqli_query($db, $reservedQuery);
 
-
-$reservedQuery = "UPDATE vozila v
-                  JOIN rezervacije r ON v.IDVozilo = r.VoziloID
-                  SET v.Raspolozivost = 'Rezervirano'
-                  WHERE r.StatusRezervacije = 'aktivna'
-                    AND CURDATE() < r.DatumPocetka";
-mysqli_query($db, $reservedQuery);
-
-                        
-                          
                             $query = "SELECT 
                                 v.IDVozilo,
                                 v.Naziv,
@@ -315,7 +364,7 @@ mysqli_query($db, $reservedQuery);
                                     <td><?= htmlspecialchars($row['Model'] ?? 'N/A') ?></td>
                                     <td><?= number_format($row['CijenaKoristenjaDnevno'], 2) ?> €</td>
                                     <td><?= htmlspecialchars($row['Godiste'] ?? 'N/A') ?></td>
-                                    <td><?= isset($row['Kilometraza']) ? number_format($row['Kilometraza'], 0, ',', '.') . ' km' : 'N/A' ?></td>
+                                    <td><?= isset($row['Kilometraza']) ? number_format($row['Kilometraza'], 0, ',', '.').' km' : 'N/A' ?></td>
                                     <td><?= htmlspecialchars($row['Registracija'] ?? 'N/A') ?></td>
                                     <td>
                                         <span class="badge <?= $statusClass ?>" title="<?= $statusText ?>">
@@ -323,9 +372,18 @@ mysqli_query($db, $reservedQuery);
                                         </span>
                                     </td>
                                     <td class="action-btns">
-                                        <a href="edit_vozilo.php?id=<?= $row['IDVozilo'] ?>" class="btn btn-sm btn-outline-primary" title="Uredi">
+                                        <button class="btn btn-sm btn-outline-primary btn-edit" 
+                                                data-id="<?= $row['IDVozilo'] ?>"
+                                                data-naziv="<?= htmlspecialchars($row['Naziv']) ?>"
+                                                data-model="<?= htmlspecialchars($row['Model'] ?? '') ?>"
+                                                data-cijena="<?= htmlspecialchars($row['CijenaKoristenjaDnevno']) ?>"
+                                                data-godiste="<?= htmlspecialchars($row['Godiste'] ?? '') ?>"
+                                                data-kilometraza="<?= htmlspecialchars($row['Kilometraza'] ?? '') ?>"
+                                                data-registracija="<?= htmlspecialchars($row['Registracija'] ?? '') ?>"
+                                                data-raspolozivost="<?= $status ?>"
+                                                title="Uredi">
                                             <i class="fas fa-edit"></i>
-                                        </a>
+                                        </button>
                                         <a href="obrisi_vozilo.php?id=<?= $row['IDVozilo'] ?>" class="btn btn-sm btn-outline-danger" title="Obriši" onclick="return confirm('Jeste li sigurni da želite obrisati ovo vozilo?')">
                                             <i class="fas fa-trash-alt"></i>
                                         </a>
@@ -352,19 +410,76 @@ mysqli_query($db, $reservedQuery);
     <?php include("footer.php"); ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-
+        // Auto-dismiss alerts
         setTimeout(function() {
             var alerts = document.querySelectorAll('.alert');
             alerts.forEach(function(alert) {
                 new bootstrap.Alert(alert).close();
             });
         }, 5000);
-        
 
+        // Initialize popovers
         var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
         var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
             return new bootstrap.Popover(popoverTriggerEl, {
                 trigger: 'hover focus'
+            });
+        });
+
+        // Handle edit button clicks
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up edit modal
+            const editVehicleModal = new bootstrap.Modal(document.getElementById('editVehicleModal'));
+            const editForm = document.getElementById('editVehicleForm');
+            
+            // Handle edit button clicks
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Fill the form with vehicle data
+                    document.getElementById('editVehicleId').value = this.getAttribute('data-id');
+                    document.getElementById('editNaziv').value = this.getAttribute('data-naziv');
+                    document.getElementById('editModel').value = this.getAttribute('data-model');
+                    document.getElementById('editCijena').value = this.getAttribute('data-cijena');
+                    document.getElementById('editGodiste').value = this.getAttribute('data-godiste') || '';
+                    document.getElementById('editKilometraza').value = this.getAttribute('data-kilometraza') || '';
+                    document.getElementById('editRegistracija').value = this.getAttribute('data-registracija') || '';
+                    
+                    // Set availability status
+                    const status = this.getAttribute('data-raspolozivost');
+                    const select = document.getElementById('editRaspolozivost');
+                    for (let i = 0; i < select.options.length; i++) {
+                        if (select.options[i].value === status) {
+                            select.selectedIndex = i;
+                            break;
+                        }
+                    }
+                    
+                    editVehicleModal.show();
+                });
+            });
+            
+            // Handle edit form submission
+            editForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this);
+                
+                fetch('obrada_uredi_vozilo.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = 'pregled_vozila.php?success=' + encodeURIComponent(data.success);
+                    } else {
+                        alert(data.error || 'Došlo je do greške');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Došlo je do greške prilikom komunikacije sa serverom');
+                });
             });
         });
     </script>

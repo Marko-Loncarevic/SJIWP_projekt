@@ -59,12 +59,10 @@
             </button>
         </div>
 
-   
         <div class="row mb-4">
             <?php
             include("db__connection.php");
             
-       
             $topRentalQuery = "SELECT k.IDKorisnici, k.ImeKorisnika, k.PrezimeKorisnika, 
                              SUM(DATEDIFF(r.DatumZavrsetka, r.DatumPocetka)) AS UkupnoDana
                              FROM korisnici k
@@ -75,7 +73,6 @@
             $topRentalResult = mysqli_query($db, $topRentalQuery);
             $topRentalUser = mysqli_fetch_assoc($topRentalResult);
             
-           
             $topPaymentQuery = "SELECT k.IDKorisnici, k.ImeKorisnika, k.PrezimeKorisnika, 
                               SUM(r.UkupnaCijena) AS UkupnoPlatio
                               FROM korisnici k
@@ -86,7 +83,6 @@
             $topPaymentResult = mysqli_query($db, $topPaymentQuery);
             $topPaymentUser = mysqli_fetch_assoc($topPaymentResult);
             
-         
             $statsQuery = "SELECT 
                           SUM(DATEDIFF(r.DatumZavrsetka, r.DatumPocetka)) AS UkupnoDana,
                           SUM(r.UkupnaCijena) AS UkupnoPlatio
@@ -142,7 +138,7 @@
             </div>
         </div>
 
-     
+        <!-- Add User Modal -->
         <div class="modal fade" id="addUserModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -174,7 +170,39 @@
             </div>
         </div>
 
-   
+        <!-- Edit User Modal -->
+        <div class="modal fade" id="editUserModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form id="editUserForm" method="POST">
+                        <input type="hidden" name="id" id="editUserId">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Uredi korisnika</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">Ime <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="ime" id="editIme" maxlength="25" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Prezime <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="prezime" id="editPrezime" maxlength="25" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Kontakt</label>
+                                <input type="text" class="form-control" name="kontakt" id="editKontakt" maxlength="40">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Odustani</button>
+                            <button type="submit" class="btn btn-primary">Spremi promjene</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <div class="card shadow-sm">
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -227,9 +255,14 @@
                                         </span>
                                     </td>
                                     <td class="action-btns">
-                                        <a href="uredi_korisnika.php?id=<?= $row['IDKorisnici'] ?>" class="btn btn-sm btn-outline-primary" title="Uredi">
+                                        <button class="btn btn-sm btn-outline-primary btn-edit" 
+                                                data-id="<?= $row['IDKorisnici'] ?>"
+                                                data-ime="<?= htmlspecialchars($row['ImeKorisnika']) ?>"
+                                                data-prezime="<?= htmlspecialchars($row['PrezimeKorisnika']) ?>"
+                                                data-kontakt="<?= htmlspecialchars($row['KontaktKorisnika'] ?? '') ?>"
+                                                title="Uredi">
                                             <i class="fas fa-edit"></i>
-                                        </a>
+                                        </button>
                                         <a href="obrisi_korisnika.php?id=<?= $row['IDKorisnici'] ?>" class="btn btn-sm btn-outline-danger" title="Obriši" onclick="return confirm('Jeste li sigurni?')">
                                             <i class="fas fa-trash-alt"></i>
                                         </a>
@@ -246,13 +279,56 @@
     <?php include("footer.php"); ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-     
+        // Auto-dismiss alerts
         setTimeout(function() {
             var alerts = document.querySelectorAll('.alert');
             alerts.forEach(function(alert) {
                 new bootstrap.Alert(alert).close();
             });
         }, 5000);
+
+        // Handle edit button clicks
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up edit modal
+            const editUserModal = new bootstrap.Modal(document.getElementById('editUserModal'));
+            const editForm = document.getElementById('editUserForm');
+            
+            // Handle edit button clicks
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.getElementById('editUserId').value = this.getAttribute('data-id');
+                    document.getElementById('editIme').value = this.getAttribute('data-ime');
+                    document.getElementById('editPrezime').value = this.getAttribute('data-prezime');
+                    document.getElementById('editKontakt').value = this.getAttribute('data-kontakt') || '';
+                    
+                    editUserModal.show();
+                });
+            });
+            
+            // Handle edit form submission
+            editForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this);
+                
+                fetch('obrada_uredi_korisnika.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = 'korisnici.php?success=' + encodeURIComponent(data.success);
+                    } else {
+                        alert(data.error || 'Došlo je do greške');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Došlo je do greške prilikom komunikacije sa serverom');
+                });
+            });
+        });
     </script>
 </body>
 </html>
