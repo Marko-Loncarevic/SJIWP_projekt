@@ -28,7 +28,6 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* Modern Navbar */
         .navbar-modern {
             background: linear-gradient(135deg, var(--dark-color), var(--primary-color));
             padding: 0.8rem 2rem;
@@ -100,7 +99,6 @@
             border-radius: 3px;
         }
 
-    
         .navbar-toggler-modern {
             border: none;
             outline: none;
@@ -154,7 +152,6 @@
             top: 0;
         }
 
-  
         @media (max-width: 991.98px) {
             .navbar-modern {
                 padding: 0.8rem 1.5rem;
@@ -223,21 +220,65 @@
         .dropdown-divider-modern {
             border-color: rgba(255, 255, 255, 0.1);
         }
+
+        /* Sidebar mode */
+        .sidebar-mode .navbar-modern {
+            flex-direction: column;
+            align-items: flex-start;
+            height: 100vh;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding-top: 1rem;
+            border-radius: 0;
+        }
+
+        .sidebar-mode .navbar-collapse-modern {
+            display: flex !important;
+            flex-direction: column;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .sidebar-mode .nav-item-modern {
+            width: 100%;
+        }
+
+        .sidebar-mode .nav-link-modern {
+            width: 100%;
+            padding-left: 2rem !important;
+        }
+
+        body.sidebar-mode {
+            padding-left: 250px;
+            transition: var(--transition);
+        }
+
+        .sidebar-mode .navbar-toggler-modern,
+        .sidebar-mode #toggleSidebar {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-modern">
         <div class="container-fluid">
             <a class="navbar-brand navbar-brand-modern" href="#">
-            <a class="nav-link nav-link-modern active" href=" index.php">
                 <i class="fas fa-car"></i> Rent-a-Car
             </a>
+
             <button class="navbar-toggler navbar-toggler-modern" type="button" data-bs-toggle="collapse" data-bs-target="#navbarModern" aria-controls="navbarModern" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon-modern"></span>
             </button>
+
             <div class="collapse navbar-collapse navbar-collapse-modern" id="navbarModern">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                   
+                    <li class="nav-item nav-item-modern">
+                        <a class="nav-link nav-link-modern active" href="index.php">
+                            <i class="fas fa-home"></i> Početna
+                        </a>
+                    </li>
                     <li class="nav-item nav-item-modern">
                         <a class="nav-link nav-link-modern" href="korisnici.php">
                             <i class="fas fa-users"></i> Korisnici
@@ -253,21 +294,21 @@
                             <i class="fas fa-car-side"></i> Vozila
                         </a>
                     </li>
-                  
                 </ul>
-                
-                
             </div>
+
+            <button id="toggleSidebar" class="btn btn-light ms-auto">
+                <i class="fas fa-bars"></i>
+            </button>
         </div>
     </nav>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+        // Aktivna stranica
+        document.addEventListener('DOMContentLoaded', function () {
+            const currentPage = window.location.pathname.split('/').pop() || 'index.php';
             const navLinks = document.querySelectorAll('.nav-link-modern');
-            
             navLinks.forEach(link => {
                 const linkHref = link.getAttribute('href');
                 if (currentPage === linkHref) {
@@ -276,6 +317,11 @@
                     link.classList.remove('active');
                 }
             });
+        });
+
+        // Sidebar toggle
+        document.getElementById('toggleSidebar').addEventListener('click', function () {
+            document.body.classList.toggle('sidebar-mode');
         });
     </script>
 </body>
