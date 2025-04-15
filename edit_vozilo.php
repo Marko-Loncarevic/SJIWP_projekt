@@ -91,8 +91,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 <body class="bg-light">
+<?php include("navigacija.php"); ?>
     <div class="container py-4">
-        <?php include("navigacija.php"); ?>
+    
         
         <div class="row justify-content-center">
             <div class="col-md-8">
