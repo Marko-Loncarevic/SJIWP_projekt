@@ -237,11 +237,7 @@
             </button>
             <div class="collapse navbar-collapse navbar-collapse-modern" id="navbarModern">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item nav-item-modern">
-                        <a class="nav-link nav-link-modern active" href=" index.php">
-                            <i class="fas fa-home"></i> Home
-                        </a>
-                    </li>
+                   
                     <li class="nav-item nav-item-modern">
                         <a class="nav-link nav-link-modern" href="korisnici.php">
                             <i class="fas fa-users"></i> Korisnici
